@@ -63,9 +63,13 @@ function collides() {
     const shape = currentPiece.shape;
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
-            if (shape[y][x] && (board[currentPos.y + y] && board[currentPos.y + y][currentPos.x + x])) {
-                // Check if it exceeds the bounds or collides with another block
+            if (shape[y][x]) {
+                // Check if the block goes beyond the board
                 if (currentPos.y + y >= ROWS || currentPos.x + x < 0 || currentPos.x + x >= COLS) {
+                    return true;
+                }
+                // Check if the block collides with another block
+                if (board[currentPos.y + y] && board[currentPos.y + y][currentPos.x + x]) {
                     return true;
                 }
             }
@@ -79,7 +83,7 @@ function placePiece() {
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
             if (shape[y][x]) {
-                board[currentPos.y + y][currentPos.x + x] = 1;
+                board[currentPos.y + y][currentPos.x + x] = 1;  // Mark the board with the piece
             }
         }
     }
@@ -89,8 +93,8 @@ function placePiece() {
 function clearLines() {
     for (let y = ROWS - 1; y >= 0; y--) {
         if (board[y].every(cell => cell !== 0)) {
-            board.splice(y, 1);
-            board.unshift(Array(COLS).fill(0));
+            board.splice(y, 1);  // Remove the filled line
+            board.unshift(Array(COLS).fill(0));  // Add a new empty line at the top
         }
     }
 }
