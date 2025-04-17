@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
-            cd ~/tetris-game || git clone https://github.com/GasimovTofig/tetris-game.git && cd tetris-game
+            cd ~/tetris-game || git clone https://github.com/GasimovTofig/Tetris-1 && cd Tetris-1
             git pull origin main
             podman stop tetris || true
             podman rm tetris || true
