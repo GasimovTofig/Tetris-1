@@ -18,6 +18,7 @@ const tetrominoes = [
 let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 let currentPiece = randomPiece();
 let currentPos = { x: 4, y: 0 };
+let gameInterval;
 
 function randomPiece() {
     const shape = tetrominoes[Math.floor(Math.random() * tetrominoes.length)];
@@ -63,7 +64,10 @@ function collides() {
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
             if (shape[y][x] && (board[currentPos.y + y] && board[currentPos.y + y][currentPos.x + x])) {
-                return true;
+                // Check if it exceeds the bounds or collides with another block
+                if (currentPos.y + y >= ROWS || currentPos.x + x < 0 || currentPos.x + x >= COLS) {
+                    return true;
+                }
             }
         }
     }
@@ -95,8 +99,45 @@ function gameLoop() {
     drawBoard();
     drawPiece();
     movePiece();
-    requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+function startGame() {
+    gameInterval = setInterval(gameLoop, 500); // Adjust speed for how fast blocks drop
+}
+
+function stopGame() {
+    clearInterval(gameInterval);
+    alert('Game Over!');
+}
+
+// Add control keys for moving the piece
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowLeft') {
+        currentPos.x--;
+        if (collides()) currentPos.x++;
+    }
+    if (event.key === 'ArrowRight') {
+        currentPos.x++;
+        if (collides()) currentPos.x--;
+    }
+    if (event.key === 'ArrowDown') {
+        movePiece();
+    }
+    if (event.key === 'ArrowUp') {
+        rotatePiece();
+    }
+});
+
+function rotatePiece() {
+    const shape = currentPiece.shape;
+    const newShape = shape[0].map((_, index) => shape.map(row => row[index])).reverse();
+    const previousShape = currentPiece.shape;
+    currentPiece.shape = newShape;
+
+    if (collides()) {
+        currentPiece.shape = previousShape;  // Revert to previous shape if collision occurs
+    }
+}
+
+startGame(); // Start the game when the page loads
 
