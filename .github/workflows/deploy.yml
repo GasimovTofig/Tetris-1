@@ -1,0 +1,30 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH into VM and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/tetris-game || git clone https://github.com/GasimovTofig/tetris-game.git && cd tetris-game
+            git pull origin main
+            podman stop tetris || true
+            podman rm tetris || true
+            podman build -t tetris-game .
+            podman run -d --name tetris -p 5001:5000 tetris-game
+
