@@ -1,10 +1,11 @@
-import http.server
-import socketserver
+from flask import Flask, render_template
 
-PORT = 5000
-Handler = http.server.SimpleHTTPRequestHandler
+app = Flask(__name__)
 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Serving Tetris on http://0.0.0.0:{PORT}")
-    httpd.serve_forever()
+@app.route('/')
+def index():
+    return render_template('index.html')  # Make sure index.html is in the templates folder
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
 
